@@ -47,7 +47,7 @@ func parse(filename, pkg string, writer io.Writer) error {
 		return err
 	}
 
-	tmpl, err := template.ParseGlob("templates/*.tmpl")
+	tmpl, err := template.ParseGlob("./templates/*.tmpl")
 	if err != nil {
 		return err
 	}
