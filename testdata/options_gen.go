@@ -8,7 +8,7 @@ import (
 )
 
 func (o *options) Parse() error {
-	flagSet := flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
+	flagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	flagSet.StringVar(&o.i, "i", o.i, "input filename")
 	flagSet.StringVar(&o.i, "input", o.i, "input filename")
 	flagSet.StringVar(&o.o, "o", o.o, "output filename")
