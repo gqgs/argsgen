@@ -69,7 +69,7 @@ func parse(filename, pkg string, writer io.Writer) error {
 				}
 
 				switch name := t.Name; name {
-				case "string", "bool", "uint", "int":
+				case "uint", "uint64", "int", "int64", "float64", "string", "bool":
 					varFunc = fmt.Sprintf("%sVar", strings.Title(name))
 				default:
 					panic("type not supported " + name)
