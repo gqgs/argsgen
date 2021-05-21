@@ -18,10 +18,17 @@ func Test_parse(t *testing.T) {
 		t.Fatal(err)
 	}
 	spaceRemover := regexp.MustCompile("\\s+")
-	output := spaceRemover.ReplaceAllString(builder.String(), "\n")
+	got := spaceRemover.ReplaceAllString(builder.String(), "\n")
 	want := spaceRemover.ReplaceAllString(string(expected), "\n")
 
-	if cmp := strings.Compare(want, output); cmp != 0 {
-		t.Errorf("parse():\n%q\n\n\n%q", want, output)
+	if cmp := strings.Compare(want, got); cmp != 0 {
+		want := strings.Split(want, "\n")
+		got := strings.Split(got, "\n")
+
+		for i := 0; i < len(want) && i < len(got); i++ {
+			if strings.Compare(want[i], got[i]) != 0 {
+				t.Fatalf("\nparse.%d():\n\twant:%q\n\tgot: %q", i, want[i], got[i])
+			}
+		}
 	}
 }
