@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"embed"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -15,16 +16,8 @@ import (
 	"strings"
 )
 
-//go:generate go run $GOFILE
-
-type options struct {
-	i, input     string `arg:"input filename,+"`
-	o, output    string `arg:"output filename,+"`
-	db, database string `arg:"database name"`
-	folder       string `arg:"target folder"`
-	parallel     uint   `arg:"number of process in parallel"`
-	profile      bool
-}
+//go:embed templates/*
+var fs embed.FS
 
 type flagSet struct {
 	VarFunc     string
@@ -47,7 +40,7 @@ func parse(filename, pkg string, writer io.Writer) error {
 		return err
 	}
 
-	tmpl, err := template.ParseGlob("./templates/*.tmpl")
+	tmpl, err := template.ParseFS(fs, "templates/*.tmpl")
 	if err != nil {
 		return err
 	}
