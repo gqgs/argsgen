@@ -1,0 +1,37 @@
+
+func (o *{{.StructName}}) Parse() error {
+    flagSet := flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
+    {{- range .Flags}}
+    flagSet.{{.VarFunc}}(&o.{{.Field}}, "{{.Field}}", o.{{.Default}}, "{{.Description}}")
+    {{- end}}
+
+    var positional []string
+    args := os.Args[1:]
+    for len(args) > 0 {
+        if err := flagSet.Parse(args); err != nil {
+            return err
+        }
+
+        if remaining := flagSet.NArg(); remaining > 0 {
+            posIndex := len(args) - remaining
+            positional = append(positional, args[posIndex])
+            args = args[posIndex+1:]
+            continue
+        }
+        break
+    }
+
+    {{if .Positional}}
+    if len(positional) == 0 {
+        return nil
+    }
+
+    {{- range $index, $fields := .Positional}}
+    {{range $field := $fields }}
+    o.{{$field}} = positional[{{$index}}]
+    {{- end}}
+    {{end}}
+    {{end -}}
+
+    return nil
+}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/ioutil"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -16,8 +17,11 @@ func Test_parse(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	output := builder.String()
-	if cmp := strings.Compare(string(expected), output); cmp != 0 {
-		t.Errorf("parse():\nwant: %q\ngot: %q", expected, output)
+	spaceRemover := regexp.MustCompile("\\s+")
+	output := spaceRemover.ReplaceAllString(builder.String(), "\n")
+	want := spaceRemover.ReplaceAllString(string(expected), "\n")
+
+	if cmp := strings.Compare(want, output); cmp != 0 {
+		t.Errorf("parse():\n%q\n\n\n%q", want, output)
 	}
 }
