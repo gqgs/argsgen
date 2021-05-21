@@ -35,3 +35,9 @@ func (o *{{.StructName}}) Parse() error {
 
     return nil
 }
+
+func (o *{{.StructName}}) MustParse() {
+    if err := o.Parse(); err != nil {
+        panic(err)
+    }
+}

@@ -47,3 +47,9 @@ func (o *options) Parse() error {
 
 	return nil
 }
+
+func (o *options) MustParse() {
+	if err := o.Parse(); err != nil {
+		panic(err)
+	}
+}
