@@ -10,13 +10,16 @@ package options
 //go:generate go run github.com/gqgs/argsgen
 
 type options struct {
-	i, input     string `arg:"input filename,+"`  // 1st positional argument
-	o, output    string `arg:"output filename,+"` // 2nd positional argument
-	db, database string `arg:"database name"`
-	folder       string `arg:"target folder"`
-	parallel     uint   `arg:"number of process in parallel"`
-	profile      bool
+	i, input     string  `arg:"input filename,+"` // 1st positional argument
+	o, output    string  `arg:"output filename,+"`// 2nd positional argument
+	db, database string  `arg:"database name"`
+	folder       string  `arg:"target folder"`
+	parallel     uint    `arg:"number of process in parallel"`
+	limit        int     `arg:"limit of something"`
+	real         float64 `arg:"float of something"`
+	profile      bool    `arg:"should it profile?"`
 }
+
 ```
 
 :point_down:
@@ -41,7 +44,9 @@ func (o *options) Parse() error {
 	flagSet.StringVar(&o.db, "database", o.db, "database name")
 	flagSet.StringVar(&o.folder, "folder", o.folder, "target folder")
 	flagSet.UintVar(&o.parallel, "parallel", o.parallel, "number of process in parallel")
-	flagSet.BoolVar(&o.profile, "profile", o.profile, "")
+	flagSet.IntVar(&o.limit, "limit", o.limit, "limit of something")
+	flagSet.Float64Var(&o.real, "real", o.real, "float of something")
+	flagSet.BoolVar(&o.profile, "profile", o.profile, "should it profile?")
 
 	var positional []string
 	args := os.Args[1:]
