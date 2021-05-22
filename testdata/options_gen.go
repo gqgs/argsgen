@@ -47,11 +47,19 @@ func (o *options) Parse() error {
 		return nil
 	}
 
-	o.i = positional[0]
-	o.input = positional[0]
+	if len(positional) > 0 {
+		o.i = positional[0]
+	}
+	if len(positional) > 0 {
+		o.input = positional[0]
+	}
 
-	o.o = positional[1]
-	o.output = positional[1]
+	if len(positional) > 1 {
+		o.o = positional[1]
+	}
+	if len(positional) > 1 {
+		o.output = positional[1]
+	}
 
 	return nil
 }

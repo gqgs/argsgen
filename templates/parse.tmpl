@@ -38,9 +38,11 @@ func (o *{{.StructName}}) Parse() error {
     }
 
     {{- range $index, $fields := .Positional}}
-    {{range $field := $fields }}
-    o.{{$field}} = positional[{{$index}}]
-    {{- end}}
+    {{- range $field := $fields }}
+    if len(positional) > {{$index}} {
+        o.{{$field}} = positional[{{$index}}]
+    }
+    {{- end -}}
     {{end}}
     {{end -}}
 
