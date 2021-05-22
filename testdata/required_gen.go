@@ -25,6 +25,7 @@ func (o *options) flagSet() *flag.FlagSet {
 	return flagSet
 }
 
+// Parse parses the arguments in os.Args
 func (o *options) Parse() error {
 	flagSet := o.flagSet()
 	var positional []string
@@ -68,6 +69,7 @@ func (o *options) Parse() error {
 	return nil
 }
 
+// MustParse parses the arguments in os.Args or exists on error
 func (o *options) MustParse() {
 	if err := o.Parse(); err != nil {
 		o.flagSet().PrintDefaults()
