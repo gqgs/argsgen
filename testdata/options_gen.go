@@ -43,24 +43,24 @@ func (o *options) Parse() error {
 		break
 	}
 
+	o.database = o.db
+	o.input = o.i
+	o.output = o.o
 	if len(positional) == 0 {
 		return nil
 	}
-
 	if len(positional) > 0 {
 		o.i = positional[0]
 	}
 	if len(positional) > 0 {
 		o.input = positional[0]
 	}
-
 	if len(positional) > 1 {
 		o.o = positional[1]
 	}
 	if len(positional) > 1 {
 		o.output = positional[1]
 	}
-
 	return nil
 }
 

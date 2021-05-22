@@ -26,6 +26,10 @@ func (o *{{.StructName}}) Parse() error {
         break
     }
 
+    {{range $orig, $alias := .Aliases -}}
+    o.{{$alias}} = o.{{$orig}}
+    {{end -}}
+
     {{if .Positional}}
     if len(positional) == 0 {
         {{range .Required -}}

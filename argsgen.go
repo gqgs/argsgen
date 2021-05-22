@@ -36,6 +36,7 @@ type vars struct {
 	Flags      []flagSet
 	Positional map[int][]string
 	Required   []required
+	Aliases    map[string]string
 }
 
 type header struct {
@@ -78,6 +79,7 @@ func parse(filename, pkg string, writer io.Writer) error {
 			vs.Flags = []flagSet{}
 			vs.Positional = make(map[int][]string)
 			vs.Required = []required{}
+			vs.Aliases = make(map[string]string)
 
 			for _, field := range x.Fields.List {
 				var varFunc string
@@ -133,6 +135,10 @@ func parse(filename, pkg string, writer io.Writer) error {
 						Description: tag,
 						Default:     field.Names[0].String(),
 					})
+				}
+
+				for _, alias := range field.Names[1:] {
+					vs.Aliases[field.Names[0].String()] = alias.String()
 				}
 			}
 
