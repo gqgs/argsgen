@@ -32,11 +32,15 @@ type required struct {
 }
 
 type vars struct {
-	Package    string
 	StructName string
 	Flags      []flagSet
 	Positional map[int][]string
 	Required   []required
+}
+
+type header struct {
+	Package  string
+	Packages map[string]struct{}
 }
 
 func parse(filename, pkg string, writer io.Writer) error {
@@ -51,22 +55,28 @@ func parse(filename, pkg string, writer io.Writer) error {
 		return err
 	}
 
-	vars := vars{
-		Package: pkg,
-	}
+	var header header
+	header.Packages = make(map[string]struct{})
+	header.Packages["flag"] = struct{}{}
+	header.Packages["os"] = struct{}{}
+	header.Package = pkg
 
-	if err = tmpl.ExecuteTemplate(writer, "header.tmpl", vars); err != nil {
-		return err
-	}
+	var varsList []vars
+	var vs vars
 
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
 		case *ast.TypeSpec:
-			vars.StructName = x.Name.Name
+			vs.StructName = x.Name.Name
 		case *ast.StructType:
-			vars.Flags = []flagSet{}
-			vars.Positional = make(map[int][]string)
-			vars.Required = []required{}
+			// skip anonymous structs
+			if vs.StructName == "" {
+				return true
+			}
+
+			vs.Flags = []flagSet{}
+			vs.Positional = make(map[int][]string)
+			vs.Required = []required{}
 
 			for _, field := range x.Fields.List {
 				var varFunc string
@@ -90,9 +100,9 @@ func parse(filename, pkg string, writer io.Writer) error {
 						switch option {
 						case "+", "positional":
 							tag = options[0]
-							n := len(vars.Positional)
+							n := len(vs.Positional)
 							for _, name := range field.Names {
-								vars.Positional[n] = append(vars.Positional[n], name.String())
+								vs.Positional[n] = append(vs.Positional[n], name.String())
 							}
 						case "!", "required":
 							tag = options[0]
@@ -106,16 +116,17 @@ func parse(filename, pkg string, writer io.Writer) error {
 								default:
 									panic("type cannot be a required field: " + t.Name)
 								}
-								vars.Required = append(vars.Required, required{
+								vs.Required = append(vs.Required, required{
 									Field: name.String(),
 									Zero:  zero,
 								})
+								header.Packages["errors"] = struct{}{}
 							}
 						}
 					}
 				}
 				for _, name := range field.Names {
-					vars.Flags = append(vars.Flags, flagSet{
+					vs.Flags = append(vs.Flags, flagSet{
 						VarFunc:     varFunc,
 						Field:       name.String(),
 						Description: tag,
@@ -124,14 +135,23 @@ func parse(filename, pkg string, writer io.Writer) error {
 				}
 			}
 
-			if err = tmpl.ExecuteTemplate(writer, "parse.tmpl", vars); err != nil {
-				panic(err)
-			}
+			varsList = append(varsList, vs)
+			vs = vars{}
 
 			return false
 		}
 		return true
 	})
+
+	if err = tmpl.ExecuteTemplate(writer, "header.tmpl", header); err != nil {
+		return err
+	}
+
+	for _, vs := range varsList {
+		if err = tmpl.ExecuteTemplate(writer, "parse.tmpl", vs); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

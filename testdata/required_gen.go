@@ -3,6 +3,7 @@
 package options
 
 import (
+	"errors"
 	"flag"
 	"os"
 )
@@ -47,6 +48,12 @@ func (o *options) Parse() error {
 	o.o = positional[1]
 	o.output = positional[1]
 
+	if o.folder == "" {
+		return errors.New("field 'folder' is required")
+	}
+	if o.limit == 0 {
+		return errors.New("field 'limit' is required")
+	}
 	return nil
 }
 

@@ -3,7 +3,7 @@
 package {{.Package}}
 
 import (
-    "errors"
-    "flag"
-    "os"
+    {{range $index, $fields := .Packages -}}
+    "{{$index}}"
+    {{end}}
 )
