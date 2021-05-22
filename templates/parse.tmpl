@@ -29,7 +29,7 @@ func (o *{{.StructName}}) Parse() error {
     if len(positional) == 0 {
         {{range .Required -}}
         if o.{{.Field}} == {{print .Zero}} {
-            return errors.New("field '{{ .Field}}' is required")
+            return errors.New("argument '{{ .Field}}' is required")
         }
         {{end -}}
 
@@ -45,7 +45,7 @@ func (o *{{.StructName}}) Parse() error {
 
     {{- range .Required -}}
     if o.{{.Field}} == {{print .Zero}} {
-        return errors.New("field '{{ .Field}}' is required")
+        return errors.New("argument '{{ .Field}}' is required")
     }
     {{end -}}
 

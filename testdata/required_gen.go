@@ -45,10 +45,10 @@ func (o *options) Parse() error {
 
 	if len(positional) == 0 {
 		if o.folder == "" {
-			return errors.New("field 'folder' is required")
+			return errors.New("argument 'folder' is required")
 		}
 		if o.limit == 0 {
-			return errors.New("field 'limit' is required")
+			return errors.New("argument 'limit' is required")
 		}
 		return nil
 	}
@@ -60,10 +60,10 @@ func (o *options) Parse() error {
 	o.output = positional[1]
 
 	if o.folder == "" {
-		return errors.New("field 'folder' is required")
+		return errors.New("argument 'folder' is required")
 	}
 	if o.limit == 0 {
-		return errors.New("field 'limit' is required")
+		return errors.New("argument 'limit' is required")
 	}
 	return nil
 }
