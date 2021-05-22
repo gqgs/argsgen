@@ -3,7 +3,6 @@
 package {{.Package}}
 
 import (
-    {{range $index, $fields := .Packages -}}
-    "{{$index}}"
-    {{end}}
+    {{- range $index, $fields := .Packages}}
+    "{{$index}}"{{end}}
 )
