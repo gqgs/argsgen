@@ -4,6 +4,7 @@ package options
 
 import (
 	"flag"
+	"fmt"
 	"os"
 )
 
@@ -52,6 +53,9 @@ func (o *options) Parse() error {
 
 func (o *options) MustParse() {
 	if err := o.Parse(); err != nil {
-		panic(err)
+		flag.PrintDefaults()
+		fmt.Fprintln(os.Stderr)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }

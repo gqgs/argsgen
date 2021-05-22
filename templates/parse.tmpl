@@ -50,6 +50,9 @@ func (o *{{.StructName}}) Parse() error {
 
 func (o *{{.StructName}}) MustParse() {
     if err := o.Parse(); err != nil {
-        panic(err)
+        flag.PrintDefaults()
+		fmt.Fprintln(os.Stderr)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
     }
 }

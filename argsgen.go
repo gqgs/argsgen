@@ -59,6 +59,7 @@ func parse(filename, pkg string, writer io.Writer) error {
 	header.Packages = make(map[string]struct{})
 	header.Packages["flag"] = struct{}{}
 	header.Packages["os"] = struct{}{}
+	header.Packages["fmt"] = struct{}{}
 	header.Package = pkg
 
 	var varsList []vars
