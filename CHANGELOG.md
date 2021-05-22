@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.1](https://github.com/gqgs/argsgen/compare/v1.0.0...v1.0.1) (2021-05-22)
+
+
+### Bug Fixes
+
+* alias not being defined ([d57cacb](https://github.com/gqgs/argsgen/commit/d57cacbed9fcbe20a088b4f0c8dea2f9bfb7b669))
+
 ## 1.0.0 (2021-05-22)
 
 
