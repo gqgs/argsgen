@@ -7,13 +7,13 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"html/template"
 	"io"
 	"log"
 	"os"
 	"reflect"
 	"strconv"
 	"strings"
+	"text/template"
 )
 
 //go:embed templates/*
@@ -26,11 +26,17 @@ type flagSet struct {
 	Default     string
 }
 
+type required struct {
+	Field string
+	Zero  string
+}
+
 type vars struct {
 	Package    string
 	StructName string
 	Flags      []flagSet
 	Positional map[int][]string
+	Required   []required
 }
 
 func parse(filename, pkg string, writer io.Writer) error {
@@ -60,6 +66,7 @@ func parse(filename, pkg string, writer io.Writer) error {
 		case *ast.StructType:
 			vars.Flags = []flagSet{}
 			vars.Positional = make(map[int][]string)
+			vars.Required = []required{}
 
 			for _, field := range x.Fields.List {
 				var varFunc string
@@ -79,11 +86,31 @@ func parse(filename, pkg string, writer io.Writer) error {
 					tagString, _ := strconv.Unquote(field.Tag.Value)
 					tag = reflect.StructTag(tagString).Get(("arg"))
 					options := strings.Split(tag, ",")
-					if len(options) > 1 && options[1] == "+" {
-						tag = options[0]
-						n := len(vars.Positional)
-						for _, name := range field.Names {
-							vars.Positional[n] = append(vars.Positional[n], name.String())
+					for _, option := range options[1:] {
+						switch option {
+						case "+", "positional":
+							tag = options[0]
+							n := len(vars.Positional)
+							for _, name := range field.Names {
+								vars.Positional[n] = append(vars.Positional[n], name.String())
+							}
+						case "!", "required":
+							tag = options[0]
+							for _, name := range field.Names {
+								var zero string
+								switch t.Name {
+								case "uint", "uint64", "int", "int64", "float64":
+									zero = "0"
+								case "string":
+									zero = `""`
+								default:
+									panic("type cannot be a required field: " + t.Name)
+								}
+								vars.Required = append(vars.Required, required{
+									Field: name.String(),
+									Zero:  zero,
+								})
+							}
 						}
 					}
 				}

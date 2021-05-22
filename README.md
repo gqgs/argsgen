@@ -13,7 +13,7 @@ type options struct {
 	i, input     string  `arg:"input filename,+"` // 1st positional argument
 	o, output    string  `arg:"output filename,+"`// 2nd positional argument
 	db, database string  `arg:"database name"`
-	folder       string  `arg:"target folder"`
+	folder       string  `arg:"target folder,required"`
 	parallel     uint    `arg:"number of process in parallel"`
 	limit        int     `arg:"limit of something"`
 	real         float64 `arg:"float of something"`
@@ -30,6 +30,7 @@ type options struct {
 package options
 
 import (
+	"errors"
 	"flag"
 	"os"
 )
@@ -74,6 +75,9 @@ func (o *options) Parse() error {
 	o.o = positional[1]
 	o.output = positional[1]
 
+	if o.folder == "" {
+		return errors.New("field 'folder' is required")
+	}
 	return nil
 }
 
