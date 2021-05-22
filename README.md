@@ -10,12 +10,12 @@ package options
 //go:generate go run github.com/gqgs/argsgen
 
 type options struct {
-	i, input     string  `arg:"input filename,+"` // 1st positional argument
-	o, output    string  `arg:"output filename,+"`// 2nd positional argument
+	i, input     string  `arg:"input filename,positional"`
+	o, output    string  `arg:"output filename,positional"`
 	db, database string  `arg:"database name"`
 	folder       string  `arg:"target folder,required"`
 	parallel     uint    `arg:"number of process in parallel"`
-	limit        int     `arg:"limit of something"`
+	limit        int     `arg:"limit of something,required"`
 	real         float64 `arg:"float of something"`
 	profile      bool    `arg:"should it profile?"`
 }
@@ -32,10 +32,11 @@ package options
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"os"
 )
 
-func (o *options) Parse() error {
+func (o *options) flagSet() *flag.FlagSet {
 	flagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	flagSet.StringVar(&o.i, "i", o.i, "input filename")
 	flagSet.StringVar(&o.i, "input", o.i, "input filename")
@@ -48,7 +49,12 @@ func (o *options) Parse() error {
 	flagSet.IntVar(&o.limit, "limit", o.limit, "limit of something")
 	flagSet.Float64Var(&o.real, "real", o.real, "float of something")
 	flagSet.BoolVar(&o.profile, "profile", o.profile, "should it profile?")
+	return flagSet
+}
 
+// Parse parses the arguments in os.Args
+func (o *options) Parse() error {
+	flagSet := o.flagSet()
 	var positional []string
 	args := os.Args[1:]
 	for len(args) > 0 {
@@ -66,6 +72,12 @@ func (o *options) Parse() error {
 	}
 
 	if len(positional) == 0 {
+		if o.folder == "" {
+			return errors.New("argument 'folder' is required")
+		}
+		if o.limit == 0 {
+			return errors.New("argument 'limit' is required")
+		}
 		return nil
 	}
 
@@ -76,14 +88,21 @@ func (o *options) Parse() error {
 	o.output = positional[1]
 
 	if o.folder == "" {
-		return errors.New("field 'folder' is required")
+		return errors.New("argument 'folder' is required")
+	}
+	if o.limit == 0 {
+		return errors.New("argument 'limit' is required")
 	}
 	return nil
 }
 
+// MustParse parses the arguments in os.Args or exists on error
 func (o *options) MustParse() {
 	if err := o.Parse(); err != nil {
-		panic(err)
+		o.flagSet().PrintDefaults()
+		fmt.Fprintln(os.Stderr)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }
 ```
