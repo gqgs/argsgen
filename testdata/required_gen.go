@@ -22,6 +22,7 @@ func (o *options) flagSet() *flag.FlagSet {
 	flagSet.IntVar(&o.limit, "limit", o.limit, "limit of something")
 	flagSet.Float64Var(&o.real, "real", o.real, "float of something")
 	flagSet.BoolVar(&o.profile, "profile", o.profile, "should it profile?")
+	flagSet.DurationVar(&o.duration, "duration", o.duration, "some duration")
 	return flagSet
 }
 

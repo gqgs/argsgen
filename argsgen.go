@@ -83,13 +83,23 @@ func parse(filename, pkg string, writer io.Writer) error {
 
 			for _, field := range x.Fields.List {
 				var varFunc string
-				t, ok := field.Type.(*ast.Ident)
-				if !ok {
+				var ident *ast.Ident
+				switch t := field.Type.(type) {
+				case *ast.Ident:
+					ident = t
+				case *ast.SelectorExpr:
+					pkg, ok := t.X.(*ast.Ident)
+					if ok && pkg.Name == "time" {
+						ident = t.Sel
+						break
+					}
+					continue
+				default:
 					continue
 				}
 
-				switch name := t.Name; name {
-				case "uint", "uint64", "int", "int64", "float64", "string", "bool":
+				switch name := ident.Name; name {
+				case "uint", "uint64", "int", "int64", "float64", "string", "bool", "Duration":
 					varFunc = fmt.Sprintf("%sVar", strings.Title(name))
 				default:
 					panic("type not supported " + name)
@@ -111,13 +121,13 @@ func parse(filename, pkg string, writer io.Writer) error {
 							tag = options[0]
 							for _, name := range field.Names {
 								var zero string
-								switch t.Name {
+								switch ident.Name {
 								case "uint", "uint64", "int", "int64", "float64":
 									zero = "0"
 								case "string":
 									zero = `""`
 								default:
-									panic("type cannot be a required field: " + t.Name)
+									panic("type cannot be a required field: " + ident.Name)
 								}
 								vs.Required = append(vs.Required, required{
 									Field: name.String(),
