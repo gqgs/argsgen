@@ -1,10 +1,14 @@
 
-func (o *{{.StructName}}) Parse() error {
+func (o *{{.StructName}}) flagSet() *flag.FlagSet {
     flagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
     {{- range .Flags}}
     flagSet.{{.VarFunc}}(&o.{{.Default}}, "{{.Field}}", o.{{.Default}}, "{{.Description}}")
     {{- end}}
+    return flagSet
+}
 
+func (o *{{.StructName}}) Parse() error {
+    flagSet := o.flagSet()
     var positional []string
     args := os.Args[1:]
     for len(args) > 0 {
@@ -50,7 +54,7 @@ func (o *{{.StructName}}) Parse() error {
 
 func (o *{{.StructName}}) MustParse() {
     if err := o.Parse(); err != nil {
-        flag.PrintDefaults()
+        o.flagSet().PrintDefaults()
 		fmt.Fprintln(os.Stderr)
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

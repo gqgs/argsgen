@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func (o *options) Parse() error {
+func (o *options) flagSet() *flag.FlagSet {
 	flagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	flagSet.StringVar(&o.i, "i", o.i, "input filename")
 	flagSet.StringVar(&o.i, "input", o.i, "input filename")
@@ -22,7 +22,11 @@ func (o *options) Parse() error {
 	flagSet.IntVar(&o.limit, "limit", o.limit, "limit of something")
 	flagSet.Float64Var(&o.real, "real", o.real, "float of something")
 	flagSet.BoolVar(&o.profile, "profile", o.profile, "should it profile?")
+	return flagSet
+}
 
+func (o *options) Parse() error {
+	flagSet := o.flagSet()
 	var positional []string
 	args := os.Args[1:]
 	for len(args) > 0 {
@@ -66,7 +70,7 @@ func (o *options) Parse() error {
 
 func (o *options) MustParse() {
 	if err := o.Parse(); err != nil {
-		flag.PrintDefaults()
+		o.flagSet().PrintDefaults()
 		fmt.Fprintln(os.Stderr)
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
