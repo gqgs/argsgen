@@ -39,6 +39,12 @@ func (o *options) Parse() error {
 	}
 
 	if len(positional) == 0 {
+		if o.folder == "" {
+			return errors.New("field 'folder' is required")
+		}
+		if o.limit == 0 {
+			return errors.New("field 'limit' is required")
+		}
 		return nil
 	}
 

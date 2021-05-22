@@ -23,6 +23,12 @@ func (o *{{.StructName}}) Parse() error {
 
     {{if .Positional}}
     if len(positional) == 0 {
+        {{range .Required -}}
+        if o.{{.Field}} == {{print .Zero}} {
+            return errors.New("field '{{ .Field}}' is required")
+        }
+        {{end -}}
+
         return nil
     }
 
