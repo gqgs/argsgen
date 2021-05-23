@@ -11,5 +11,5 @@ type options struct {
 	limit        int           `arg:"limit of something,required"`
 	real         float64       `arg:"float of something"`
 	profile      bool          `arg:"should it profile?"`
-	duration     time.Duration `arg:"some duration"`
+	duration     time.Duration `arg:"some duration,required"`
 }

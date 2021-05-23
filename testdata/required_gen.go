@@ -48,12 +48,16 @@ func (o *options) Parse() error {
 	o.database = o.db
 	o.input = o.i
 	o.output = o.o
+
 	if len(positional) == 0 {
 		if o.folder == "" {
 			return errors.New("argument 'folder' is required")
 		}
 		if o.limit == 0 {
 			return errors.New("argument 'limit' is required")
+		}
+		if o.duration == 0 {
+			return errors.New("argument 'duration' is required")
 		}
 		return nil
 	}
@@ -74,6 +78,9 @@ func (o *options) Parse() error {
 	}
 	if o.limit == 0 {
 		return errors.New("argument 'limit' is required")
+	}
+	if o.duration == 0 {
+		return errors.New("argument 'duration' is required")
 	}
 	return nil
 }

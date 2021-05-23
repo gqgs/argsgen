@@ -122,7 +122,7 @@ func parse(filename, pkg string, writer io.Writer) error {
 							for _, name := range field.Names {
 								var zero string
 								switch ident.Name {
-								case "uint", "uint64", "int", "int64", "float64":
+								case "uint", "uint64", "int", "int64", "float64", "Duration":
 									zero = "0"
 								case "string":
 									zero = `""`
