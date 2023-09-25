@@ -7,7 +7,7 @@ CLI argument parser code generator
 ```go
 package options
 
-//go:generate go run github.com/gqgs/argsgen
+//go:generate go run github.com/gqgs/argsgen@latest
 
 type options struct {
 	i, input     string  `arg:"input filename,positional"`
