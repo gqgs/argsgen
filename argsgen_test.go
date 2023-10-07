@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"regexp"
 	"strings"
@@ -37,10 +38,16 @@ func compare(t *testing.T, inputFile, outputFile string) {
 	}
 }
 
-func Test_parse_options(t *testing.T) {
-	compare(t, "testdata/options.go", "testdata/options_gen.go")
-}
+func Test_parse(t *testing.T) {
+	testcases := []string{
+		"options",
+		"required",
+		"no_positional",
+	}
 
-func Test_parse_required(t *testing.T) {
-	compare(t, "testdata/required.go", "testdata/required_gen.go")
+	for _, tt := range testcases {
+		t.Run(tt, func(t *testing.T) {
+			compare(t, fmt.Sprintf("testdata/%s.go", tt), fmt.Sprintf("testdata/%s_gen.go", tt))
+		})
+	}
 }

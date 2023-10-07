@@ -10,7 +10,9 @@ func (o *{{.StructName}}) flagSet() *flag.FlagSet {
 // Parse parses the arguments in os.Args
 func (o *{{.StructName}}) Parse() error {
     flagSet := o.flagSet()
+    {{if .Positional}}
     var positional []string
+    {{end -}}
     args := os.Args[1:]
     for len(args) > 0 {
         if err := flagSet.Parse(args); err != nil {
@@ -19,7 +21,9 @@ func (o *{{.StructName}}) Parse() error {
 
         if remaining := flagSet.NArg(); remaining > 0 {
             posIndex := len(args) - remaining
+            {{if .Positional}}
             positional = append(positional, args[posIndex])
+            {{end -}}
             args = args[posIndex+1:]
             continue
         }
