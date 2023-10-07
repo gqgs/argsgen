@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/gqgs/argsgen/compare/v1.1.0...v1.1.1) (2023-10-07)
+
+
+### Bug Fixes
+
+* don't output positional args if not used ([cd27063](https://github.com/gqgs/argsgen/commit/cd27063c04761e6bbed5581639c57b6ad33a7157)), closes [#3](https://github.com/gqgs/argsgen/issues/3)
+
 ## [1.1.0](https://github.com/gqgs/argsgen/compare/v1.0.1...v1.1.0) (2021-05-26)
 
 
