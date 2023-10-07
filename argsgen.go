@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+	"unicode"
 )
 
 //go:embed templates/*
@@ -42,6 +43,18 @@ type vars struct {
 type header struct {
 	Package  string
 	Packages map[string]struct{}
+}
+
+func toTitle(input string) string {
+	builder := new(strings.Builder)
+	for i, r := range input {
+		if i == 0 {
+			builder.WriteRune(unicode.ToUpper(r))
+			continue
+		}
+		builder.WriteRune(r)
+	}
+	return builder.String()
 }
 
 func parse(filename, pkg string, writer io.Writer) error {
@@ -100,7 +113,7 @@ func parse(filename, pkg string, writer io.Writer) error {
 
 				switch name := ident.Name; name {
 				case "uint", "uint64", "int", "int64", "float64", "string", "bool", "Duration":
-					varFunc = fmt.Sprintf("%sVar", strings.Title(name))
+					varFunc = fmt.Sprintf("%sVar", toTitle(name))
 				default:
 					panic("type not supported " + name)
 				}

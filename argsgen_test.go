@@ -1,10 +1,14 @@
 package main
 
 import (
-	"io/ioutil"
+	"os"
 	"regexp"
 	"strings"
 	"testing"
+)
+
+var (
+	spaceRemover = regexp.MustCompile(`\s+`)
 )
 
 func compare(t *testing.T, inputFile, outputFile string) {
@@ -13,11 +17,11 @@ func compare(t *testing.T, inputFile, outputFile string) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expected, err := ioutil.ReadFile(outputFile)
+	expected, err := os.ReadFile(outputFile)
 	if err != nil {
 		t.Fatal(err)
 	}
-	spaceRemover := regexp.MustCompile("\\s+")
+
 	got := spaceRemover.ReplaceAllString(builder.String(), "\n")
 	want := spaceRemover.ReplaceAllString(string(expected), "\n")
 
