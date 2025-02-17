@@ -32,7 +32,7 @@ func compare(t *testing.T, inputFile, outputFile string) {
 
 		for i := 0; i < len(want) && i < len(got); i++ {
 			if strings.Compare(want[i], got[i]) != 0 {
-				t.Fatalf("\nparse.%d():\n\twant:%q\n\tgot: %q", i, want[i], got[i])
+				t.Fatalf("\nparse:%d():\n\twant:%q\n\tgot: %q", i, want[i], got[i])
 			}
 		}
 	}
@@ -40,9 +40,10 @@ func compare(t *testing.T, inputFile, outputFile string) {
 
 func Test_parse(t *testing.T) {
 	testcases := []string{
-		"options",
+		"simple",
+		"positional",
 		"required",
-		"no_positional",
+		"required_and_positional",
 	}
 
 	for _, tt := range testcases {

@@ -3,7 +3,6 @@
 package options
 
 import (
-    "errors"
     "flag"
     "fmt"
     "os"
@@ -35,13 +34,6 @@ func (o *options) Parse() error {
             continue
         }
         break
-    }
-
-    if o.db == "" {
-        return errors.New("argument 'db' is required")
-    }
-    if o.song == "" {
-        return errors.New("argument 'song' is required")
     }
     return nil
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"embed"
 	"fmt"
 	"go/ast"
@@ -121,17 +120,16 @@ func parse(filename, pkg string, writer io.Writer) error {
 				if field.Tag != nil {
 					tagString, _ := strconv.Unquote(field.Tag.Value)
 					tag = reflect.StructTag(tagString).Get(("arg"))
-					options := strings.Split(tag, ",")
-					for _, option := range options[1:] {
+					var options string
+					tag, options, _ = strings.Cut(tag, ",")
+					for _, option := range strings.Split(options, "+") {
 						switch option {
-						case "+", "positional":
-							tag = options[0]
+						case "positional":
 							n := len(vs.Positional)
 							for _, name := range field.Names {
 								vs.Positional[n] = append(vs.Positional[n], name.String())
 							}
-						case "!", "required":
-							tag = options[0]
+						case "required":
 							for _, name := range field.Names {
 								var zero string
 								switch ident.Name {
@@ -189,11 +187,6 @@ func parse(filename, pkg string, writer io.Writer) error {
 func main() {
 	input := os.Getenv("GOFILE")
 	pkg := os.Getenv("GOPACKAGE")
-	writer := new(bytes.Buffer)
-
-	if err := parse(input, pkg, writer); err != nil {
-		log.Fatal(err)
-	}
 
 	output := strings.TrimSuffix(input, ".go") + "_gen.go"
 	file, err := os.Create(output)
@@ -202,6 +195,7 @@ func main() {
 	}
 	defer file.Close()
 
-	out := writer.String()
-	file.WriteString(out)
+	if err := parse(input, pkg, file); err != nil {
+		log.Fatal(err)
+	}
 }
