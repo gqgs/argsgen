@@ -1,3 +1,3 @@
-module github.com/gqgs/argsgen/v2
+module github.com/gqgs/argsgen
 
 go 1.24
