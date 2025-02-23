@@ -1,0 +1,74 @@
+
+func (o *{{.StructName}}) flagSet() *flag.FlagSet {
+    flagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+    {{- range .Flags}}
+    flagSet.{{.VarFunc}}(&o.{{.Default}}, "{{.Field}}", o.{{.Default}}, "{{.Description}}")
+    {{- end}}
+    return flagSet
+}
+
+// Parse parses the arguments in os.Args
+func (o *{{.StructName}}) Parse() error {
+    flagSet := o.flagSet()
+    {{if .Positional}}
+    var positional []string
+    {{end -}}
+    args := os.Args[1:]
+    for len(args) > 0 {
+        if err := flagSet.Parse(args); err != nil {
+            return err
+        }
+
+        if remaining := flagSet.NArg(); remaining > 0 {
+            posIndex := len(args) - remaining
+            {{if .Positional}}
+            positional = append(positional, args[posIndex])
+            {{end -}}
+            args = args[posIndex+1:]
+            continue
+        }
+        break
+    }
+
+    {{range $orig, $alias := .Aliases -}}
+    o.{{$alias}} = o.{{$orig}}
+    {{end -}}
+
+    {{if .Positional}}
+    if len(positional) == 0 {
+        {{range .Required -}}
+        if o.{{.Field}} == {{print .Zero}} {
+            return errors.New("argument '{{ .Field}}' is required")
+        }
+        {{end -}}
+
+        return nil
+    }
+
+    {{- range $index, $fields := .Positional}}
+    {{- range $field := $fields }}
+    if len(positional) > {{$index}} {
+        o.{{$field}} = positional[{{$index}}]
+    }
+    {{- end -}}
+    {{end}}
+    {{end -}}
+
+    {{- range .Required -}}
+    if o.{{.Field}} == {{print .Zero}} {
+        return errors.New("argument '{{ .Field}}' is required")
+    }
+    {{end -}}
+
+    return nil
+}
+
+// MustParse parses the arguments in os.Args or exists on error
+func (o *{{.StructName}}) MustParse() {
+    if err := o.Parse(); err != nil {
+        o.flagSet().PrintDefaults()
+        fmt.Fprintln(os.Stderr)
+        fmt.Fprintln(os.Stderr, err)
+        os.Exit(1)
+    }
+}
