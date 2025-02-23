@@ -4,10 +4,15 @@ CLI argument parser code generator
 
 #### Usage:
 
+```bash
+go get -tool github.com/gqgs/argsgen/v2@latest
+```
+
+
 ```go
 package options
 
-//go:generate go run github.com/gqgs/argsgen@latest
+//go:generate go tool argsgen
 
 type options struct {
 	i, input     string  `arg:"input filename,positional"`
