@@ -44,6 +44,7 @@ func Test_parse(t *testing.T) {
 		"positional",
 		"required",
 		"required_and_positional",
+		"positional_and_required",
 	}
 
 	for _, tt := range testcases {
